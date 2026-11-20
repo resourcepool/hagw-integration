@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package hagateway.v1;
+
+option go_package = "hagateway/gen/hagateway/v1;hagatewayv1";
+
+// Tunnel is served by the public gateway. The Home Assistant integration (the
+// "agent") dials out to it, so the Home Assistant instance never needs an
+// inbound port. Authentication: "authorization: Bearer <token>" metadata.
+service Tunnel {
+  // Connect opens the long-lived stream. The gateway pushes captured HTTP
+  // requests; the agent replays them against the local Home Assistant and
+  // answers with the matching response (correlated by id).
+  rpc Connect(stream AgentMessage) returns (stream GatewayMessage);
+
+  // Authenticate checks the token without opening the tunnel (so it never
+  // displaces a connected agent) and says whose it is. Used when the
+  // integration is being set up in Home Assistant.
+  rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
+}
+
+message AuthenticateRequest {}
+
+message AuthenticateResponse {
+  // The hostname the token's owner is served on, e.g. "alice.gw.example.com".
+  string host = 1;
+}
+
+message Header {
+  string name = 1;
+  repeated string values = 2;
+}
+
+message HttpRequest {
+  string id = 1;
+  string method = 2;
+  // Escaped path exactly as received, e.g. "/api/google_assistant".
+  string path = 3;
+  // Raw query string without the leading "?".
+  string raw_query = 4;
+  repeated Header headers = 5;
+  bytes body = 6;
+  // IP of the remote caller as seen by the gateway.
+  string remote_addr = 7;
+  // "http" or "https", as seen by the remote caller.
+  string scheme = 8;
+  // Host header sent by the remote caller.
+  string host = 9;
+}
+
+message HttpResponse {
+  string id = 1;
+  int32 status = 2;
+  repeated Header headers = 3;
+  bytes body = 4;
+  // Set when the agent could not replay the request locally. The gateway
+  // answers 502 and status/headers/body are ignored.
+  string error = 5;
+}
+
+message Hello {
+  string agent_version = 1;
+  string ha_version = 2;
+}
+
+message GatewayMessage {
+  oneof kind {
+    HttpRequest request = 1;
+  }
+}
+
+message AgentMessage {
+  oneof kind {
+    Hello hello = 1;
+    HttpResponse response = 2;
+  }
+}

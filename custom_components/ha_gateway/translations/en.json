@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to your gateway",
+        "description": "Enter the address and token shown in the gateway's manager, under Home connection. This Home Assistant dials out to the gateway; no port is opened at home.",
+        "data": {
+          "address": "Gateway address",
+          "token": "Token",
+          "use_tls": "Use TLS",
+          "local_url": "Local Home Assistant URL",
+          "forward_client_ip": "Forward the remote caller IP"
+        },
+        "data_description": {
+          "address": "Your own gateway subdomain and port, for example alice.gw.example.com:443",
+          "token": "Created in the gateway's manager, under Home connection. It is shown once there.",
+          "use_tls": "Turn off only on a trusted network: without TLS the token travels in clear.",
+          "local_url": "Where calls from the gateway are replayed. The default fits a standard installation.",
+          "forward_client_ip": "Lets Home Assistant see the real caller (IP bans, trusted networks). Needs use_x_forwarded_for and 127.0.0.1 in trusted_proxies in the http configuration."
+        }
+      },
+      "reauth_confirm": {
+        "title": "The gateway no longer accepts the token",
+        "description": "The token for {host} was replaced or revoked. Create a new one in the gateway's manager, under Home connection, and enter it here.",
+        "data": {
+          "token": "New token"
+        }
+      },
+      "reconfigure": {
+        "title": "Change the gateway connection",
+        "data": {
+          "address": "Gateway address",
+          "token": "Token",
+          "use_tls": "Use TLS",
+          "local_url": "Local Home Assistant URL",
+          "forward_client_ip": "Forward the remote caller IP"
+        },
+        "data_description": {
+          "address": "Your own gateway subdomain and port, for example alice.gw.example.com:443",
+          "token": "Created in the gateway's manager, under Home connection.",
+          "use_tls": "Turn off only on a trusted network: without TLS the token travels in clear.",
+          "local_url": "Where calls from the gateway are replayed.",
+          "forward_client_ip": "Needs use_x_forwarded_for and 127.0.0.1 in trusted_proxies in the http configuration."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No gateway answered at that address. Check the address and port, and whether TLS should be on.",
+      "invalid_auth": "The gateway does not accept this token. Copy it again from the manager, or create a new one.",
+      "unsupported_gateway": "Something answers at that address, but it is not a gateway this version can talk to. Update the gateway.",
+      "invalid_url": "Must start with http:// or https://",
+      "unknown": "Something unexpected went wrong. The Home Assistant log has the details."
+    },
+    "abort": {
+      "already_configured": "This gateway account is already connected.",
+      "single_instance_allowed": "Already configured. Only a single configuration possible.",
+      "reauth_successful": "The new token works. The connection is being restored.",
+      "reconfigure_successful": "Saved. The connection is being restored.",
+      "wrong_account": "That token belongs to a different gateway account. Use a token of the account this Home Assistant is connected to, or remove the integration and add it again."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "connection": {
+        "name": "Gateway connection"
+      }
+    }
+  }
+}

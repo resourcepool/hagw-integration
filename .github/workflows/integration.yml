@@ -1,0 +1,71 @@
+# Checks the integration the way HACS and Home Assistant do.
+# Both validations are required for a listing in the HACS default store.
+name: Integration
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 5 * * 1" # weekly: catches breakage from new Home Assistant releases
+
+permissions:
+  contents: read
+
+jobs:
+  hassfest:
+    name: Home Assistant validation (hassfest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    name: HACS validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hacs/action@main
+        with:
+          category: integration
+
+  package:
+    name: Build ha_gateway.zip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: make zip
+      # The same archive a release publishes, for trying a branch before tagging it.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ha_gateway
+          path: dist/ha_gateway.zip
+          if-no-files-found: error
+
+  tests:
+    name: Setup flow in a real Home Assistant
+    runs-on: ubuntu-latest
+    env:
+      # Read access to the gateway repository, which is private. Without it
+      # (forks, pull requests from forks) the job is skipped.
+      GATEWAY_REPO_TOKEN: ${{ secrets.GATEWAY_REPO_TOKEN }}
+    steps:
+      - if: env.GATEWAY_REPO_TOKEN == ''
+        run: echo "::notice::GATEWAY_REPO_TOKEN is not set; skipping the tests against a real gateway."
+      - if: env.GATEWAY_REPO_TOKEN != ''
+        uses: actions/checkout@v4
+      - if: env.GATEWAY_REPO_TOKEN != ''
+        uses: actions/checkout@v4
+        with:
+          repository: resourcepool/home-assistant-gateway
+          token: ${{ env.GATEWAY_REPO_TOKEN }}
+          path: gateway-src
+      - if: env.GATEWAY_REPO_TOKEN != ''
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: gateway-src/gateway/go.mod
+          cache-dependency-path: gateway-src/gateway/go.sum
+      - if: env.GATEWAY_REPO_TOKEN != ''
+        run: cd gateway-src/gateway && CGO_ENABLED=0 go build -o "$RUNNER_TEMP/gateway" ./cmd/gateway
+      - if: env.GATEWAY_REPO_TOKEN != ''
+        uses: astral-sh/setup-uv@v5
+      - if: env.GATEWAY_REPO_TOKEN != ''
+        run: GATEWAY_BINARY="$RUNNER_TEMP/gateway" make test

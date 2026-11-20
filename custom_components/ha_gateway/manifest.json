@@ -1,0 +1,24 @@
+{
+  "domain": "ha_gateway",
+  "name": "Home Assistant Gateway",
+  "after_dependencies": [
+    "http"
+  ],
+  "codeowners": [
+    "@resourcepool"
+  ],
+  "config_flow": true,
+  "documentation": "https://hagw.link/docs/home-assistant",
+  "integration_type": "service",
+  "iot_class": "cloud_push",
+  "issue_tracker": "https://github.com/resourcepool/hagw-integration/issues",
+  "loggers": [
+    "custom_components.ha_gateway"
+  ],
+  "requirements": [
+    "grpcio>=1.62.0",
+    "protobuf>=4.25.0"
+  ],
+  "single_config_entry": true,
+  "version": "0.2.0"
+}

@@ -1,0 +1,35 @@
+# Pushing a tag vX.Y.Z publishes a GitHub release with the integration
+# attached as ha_gateway.zip, which is what HACS downloads.
+#
+#   1. set the version in custom_components/ha_gateway/manifest.json and const.py
+#   2. git tag v0.2.0 && git push origin v0.2.0
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag is the integration's version
+        run: |
+          version=$(python3 -c "import json; print(json.load(open('custom_components/ha_gateway/manifest.json'))['version'])")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match the version in manifest.json ($version)"
+            exit 1
+          fi
+
+      - name: Build ha_gateway.zip
+        run: make zip
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/ha_gateway.zip --title "$GITHUB_REF_NAME" --generate-notes

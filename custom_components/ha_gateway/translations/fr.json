@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connexion à votre passerelle",
+        "description": "Saisissez l'adresse et le jeton affichés dans le gestionnaire de la passerelle, rubrique Home connection. Ce Home Assistant se connecte vers la passerelle ; aucun port n'est ouvert chez vous.",
+        "data": {
+          "address": "Adresse de la passerelle",
+          "token": "Jeton",
+          "use_tls": "Utiliser TLS",
+          "local_url": "URL locale de Home Assistant",
+          "forward_client_ip": "Transmettre l'adresse IP de l'appelant"
+        },
+        "data_description": {
+          "address": "Votre sous-domaine sur la passerelle et son port, par exemple alice.gw.example.com:443",
+          "token": "Créé dans le gestionnaire de la passerelle, rubrique Home connection. Il n'y est affiché qu'une fois.",
+          "use_tls": "À désactiver uniquement sur un réseau de confiance : sans TLS, le jeton circule en clair.",
+          "local_url": "Là où les appels venant de la passerelle sont rejoués. La valeur par défaut convient à une installation standard.",
+          "forward_client_ip": "Permet à Home Assistant de voir le véritable appelant (bannissement d'IP, réseaux de confiance). Nécessite use_x_forwarded_for et 127.0.0.1 dans trusted_proxies dans la configuration http."
+        }
+      },
+      "reauth_confirm": {
+        "title": "La passerelle n'accepte plus le jeton",
+        "description": "Le jeton de {host} a été remplacé ou révoqué. Créez-en un nouveau dans le gestionnaire de la passerelle, rubrique Home connection, puis saisissez-le ici.",
+        "data": {
+          "token": "Nouveau jeton"
+        }
+      },
+      "reconfigure": {
+        "title": "Modifier la connexion à la passerelle",
+        "data": {
+          "address": "Adresse de la passerelle",
+          "token": "Jeton",
+          "use_tls": "Utiliser TLS",
+          "local_url": "URL locale de Home Assistant",
+          "forward_client_ip": "Transmettre l'adresse IP de l'appelant"
+        },
+        "data_description": {
+          "address": "Votre sous-domaine sur la passerelle et son port, par exemple alice.gw.example.com:443",
+          "token": "Créé dans le gestionnaire de la passerelle, rubrique Home connection.",
+          "use_tls": "À désactiver uniquement sur un réseau de confiance : sans TLS, le jeton circule en clair.",
+          "local_url": "Là où les appels venant de la passerelle sont rejoués.",
+          "forward_client_ip": "Nécessite use_x_forwarded_for et 127.0.0.1 dans trusted_proxies dans la configuration http."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Aucune passerelle ne répond à cette adresse. Vérifiez l'adresse, le port, et si TLS doit être activé.",
+      "invalid_auth": "La passerelle n'accepte pas ce jeton. Copiez-le de nouveau depuis le gestionnaire, ou créez-en un nouveau.",
+      "unsupported_gateway": "Un service répond à cette adresse, mais ce n'est pas une passerelle compatible avec cette version. Mettez la passerelle à jour.",
+      "invalid_url": "Doit commencer par http:// ou https://",
+      "unknown": "Une erreur inattendue s'est produite. Le journal de Home Assistant contient les détails."
+    },
+    "abort": {
+      "already_configured": "Ce compte de passerelle est déjà connecté.",
+      "single_instance_allowed": "Déjà configuré. Une seule configuration est possible.",
+      "reauth_successful": "Le nouveau jeton fonctionne. La connexion est en cours de rétablissement.",
+      "reconfigure_successful": "Enregistré. La connexion est en cours de rétablissement.",
+      "wrong_account": "Ce jeton appartient à un autre compte de la passerelle. Utilisez un jeton du compte auquel ce Home Assistant est relié, ou supprimez l'intégration puis ajoutez-la de nouveau."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "connection": {
+        "name": "Connexion à la passerelle"
+      }
+    }
+  }
+}
