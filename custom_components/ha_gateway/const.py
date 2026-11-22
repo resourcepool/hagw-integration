@@ -1,7 +1,7 @@
 """Constants for the Home Assistant Gateway integration."""
 
 DOMAIN = "ha_gateway"
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 
 CONF_ADDRESS = "address"
 CONF_TOKEN = "token"
